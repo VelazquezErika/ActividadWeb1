@@ -10,10 +10,20 @@ class WebRequestHandler(BaseHTTPRequestHandler):
         return dict(parse_qsl(self.url().query))
 
     def do_GET(self):
-        self.send_response(200)
-        self.send_header("Content-Type", "text/html")
-        self.end_headers()
-        self.wfile.write(self.get_response().encode("utf-8"))
+        path = self.url().path
+        if path == "/":
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            with open('home.html', 'r', encoding='utf-8') as file:
+                content = file.read()
+                self.wfile.write(content.encode("utf-8"))
+        else:
+            self.send_response(404)
+            self.send_header("Content-Type", "text/html")
+            self.end_headers()
+            error_html = """404 - Página no encontrada"""
+            self.wfile.write(error_html.encode("utf-8"))
 
     def get_response(self):
         path = self.url().path
